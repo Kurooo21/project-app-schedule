@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'home_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -48,8 +49,12 @@ class WelcomeScreen extends StatelessWidget {
               // 4. Tombol Mulai
               ElevatedButton(
                 onPressed: () {
-                  // Nanti kita isi dengan perintah pindah ke halaman Home
-                  print('Tombol Mulai Ditekan!');
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF5CA4C5), // Warna biru kalem sesuai desainmu
