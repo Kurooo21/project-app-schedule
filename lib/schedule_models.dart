@@ -55,10 +55,10 @@ class BoardLabel {
 }
 
 const List<String> scheduleTags = <String>[
-  'Pelajaran',
-  'Tugas',
-  'Praktik',
-  'Organisasi',
+  'Pekerjaan',
+  'Rutin',
+  'Sosial',
+  'Hiburan',
 ];
 
 const List<DayInfo> weekDays = <DayInfo>[
@@ -135,64 +135,64 @@ Map<String, List<ScheduleEntry>> buildInitialSchedules() {
     'Senin': <ScheduleEntry>[
       const ScheduleEntry(
         id: 'senin-1',
-        subject: 'Matematika',
-        start: TimeOfDay(hour: 7, minute: 0),
-        end: TimeOfDay(hour: 8, minute: 30),
-        location: 'Ruang 2A',
-        note: 'Fokus latihan aljabar dan bawa buku paket.',
-        tag: 'Pelajaran',
+        subject: 'Olahraga Pagi',
+        start: TimeOfDay(hour: 6, minute: 0),
+        end: TimeOfDay(hour: 7, minute: 0),
+        location: 'Taman Komplek',
+        note: 'Lari pagi 3km.',
+        tag: 'Rutin',
       ),
       const ScheduleEntry(
         id: 'senin-2',
-        subject: 'Diskusi Kelompok',
+        subject: 'Meeting Mingguan',
         start: TimeOfDay(hour: 10, minute: 0),
         end: TimeOfDay(hour: 11, minute: 0),
-        location: 'Perpustakaan',
-        note: 'Bahas presentasi proyek akhir.',
-        tag: 'Organisasi',
+        location: 'Kantor / Zoom',
+        note: 'Bahas target minggu ini.',
+        tag: 'Pekerjaan',
       ),
     ],
     'Selasa': <ScheduleEntry>[
       const ScheduleEntry(
         id: 'selasa-1',
-        subject: 'Bahasa Indonesia',
-        start: TimeOfDay(hour: 8, minute: 0),
-        end: TimeOfDay(hour: 9, minute: 30),
-        location: 'Ruang 1C',
-        note: 'Presentasi cerpen dan siapkan outline.',
-        tag: 'Pelajaran',
+        subject: 'Belanja Bulanan',
+        start: TimeOfDay(hour: 16, minute: 0),
+        end: TimeOfDay(hour: 17, minute: 30),
+        location: 'Supermarket',
+        note: 'Beli kebutuhan dapur dan sabun.',
+        tag: 'Rutin',
       ),
       const ScheduleEntry(
         id: 'selasa-2',
-        subject: 'Latihan Soal',
-        start: TimeOfDay(hour: 13, minute: 0),
-        end: TimeOfDay(hour: 14, minute: 0),
-        location: 'Rumah',
-        note: 'Kerjakan 10 soal untuk persiapan kuis.',
-        tag: 'Tugas',
+        subject: 'Makan Malam Bersama',
+        start: TimeOfDay(hour: 19, minute: 0),
+        end: TimeOfDay(hour: 20, minute: 30),
+        location: 'Restoran',
+        note: 'Makan bareng teman lama.',
+        tag: 'Sosial',
       ),
     ],
     'Rabu': <ScheduleEntry>[
       const ScheduleEntry(
         id: 'rabu-1',
-        subject: 'Praktikum IPA',
+        subject: 'Selesaikan Laporan',
         start: TimeOfDay(hour: 9, minute: 0),
-        end: TimeOfDay(hour: 11, minute: 0),
-        location: 'Lab IPA',
-        note: 'Gunakan jas lab dan catat hasil pengamatan.',
-        tag: 'Praktik',
+        end: TimeOfDay(hour: 12, minute: 0),
+        location: 'Meja Kerja',
+        note: 'Kirim laporan akhir bulan ke bos.',
+        tag: 'Pekerjaan',
       ),
     ],
     'Kamis': <ScheduleEntry>[],
     'Jumat': <ScheduleEntry>[
       const ScheduleEntry(
         id: 'jumat-1',
-        subject: 'Review Mingguan',
-        start: TimeOfDay(hour: 7, minute: 30),
-        end: TimeOfDay(hour: 8, minute: 15),
-        location: 'Kelas utama',
-        note: 'Ringkas materi seminggu terakhir.',
-        tag: 'Tugas',
+        subject: 'Nonton Film',
+        start: TimeOfDay(hour: 20, minute: 0),
+        end: TimeOfDay(hour: 22, minute: 30),
+        location: 'Ruang TV',
+        note: 'Nonton serial Netflix terbaru.',
+        tag: 'Hiburan',
       ),
     ],
     'Sabtu': <ScheduleEntry>[],
@@ -223,11 +223,11 @@ int timeInMinutes(TimeOfDay time) => time.hour * 60 + time.minute;
 
 Color tagColor(String tag) {
   switch (tag) {
-    case 'Tugas':
+    case 'Rutin':
       return AppPalette.warning;
-    case 'Praktik':
+    case 'Sosial':
       return AppPalette.success;
-    case 'Organisasi':
+    case 'Hiburan':
       return const Color(0xFF8B8BE0);
     default:
       return AppPalette.primary;

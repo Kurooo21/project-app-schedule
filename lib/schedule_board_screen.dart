@@ -170,7 +170,7 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
     );
   }
 
-  Future<void> _confirmDelete(ScheduleEntry entry) async {
+  Future<bool> _confirmDelete(ScheduleEntry entry) async {
     final approved = await showModalBottomSheet<bool>(
           context: context,
           backgroundColor: Colors.transparent,
@@ -231,7 +231,7 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
         false;
 
     if (!approved) {
-      return;
+      return false;
     }
 
     setState(() {
@@ -241,12 +241,14 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
     });
 
     if (!mounted) {
-      return;
+      return true;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${entry.subject} berhasil dihapus.')),
     );
+    
+    return true;
   }
 
   @override
@@ -256,6 +258,13 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
     return WillPopScope(
       onWillPop: _handlePop,
       child: Scaffold(
+        floatingActionButton: widget.mode == AgendaBoardMode.view
+            ? FloatingActionButton(
+                onPressed: _openForm,
+                backgroundColor: AppPalette.primaryStrong,
+                child: const Icon(Icons.add_rounded, color: Colors.white),
+              )
+            : null,
         body: AppBackdrop(
           child: SafeArea(
             child: ScreenSurface(
@@ -290,43 +299,29 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
                                 const SizedBox(height: 10),
                             itemBuilder: (context, index) {
                               final entry = _entries[index];
-                              return AgendaCard(
-                                entry: entry,
-                                actionLabel: modeLabel.actionLabel,
-                                onTap: () => _handleEntryTap(entry),
+                              return Dismissible(
+                                key: ValueKey(entry.id),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 20),
+                                  decoration: BoxDecoration(
+                                    color: AppPalette.danger,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: const Icon(Icons.delete_outline_rounded, color: Colors.white),
+                                ),
+                                confirmDismiss: (direction) => _confirmDelete(entry),
+                                child: AgendaCard(
+                                  entry: entry,
+                                  actionLabel: modeLabel.actionLabel,
+                                  onTap: () => _handleEntryTap(entry),
+                                ),
                               );
                             },
                           ),
                   ),
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.pop(context, _entries),
-                          child: const Text('Kembali'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: () {
-                            if (widget.mode == AgendaBoardMode.view) {
-                              _openForm();
-                              return;
-                            }
 
-                            Navigator.pop(context, _entries);
-                          },
-                          child: Text(
-                            widget.mode == AgendaBoardMode.view
-                                ? 'Tambah'
-                                : 'Selesai',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),

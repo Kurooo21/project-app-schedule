@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_style.dart';
-import 'day_action_screen.dart';
+import 'schedule_board_screen.dart';
 import 'schedule_models.dart';
 import 'schedule_widgets.dart';
 
@@ -21,11 +21,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final updatedEntries = await Navigator.push<List<ScheduleEntry>>(
       context,
       MaterialPageRoute(
-        builder: (context) => DayActionScreen(
+        builder: (context) => ScheduleBoardScreen(
           day: day,
           initialEntries: List<ScheduleEntry>.from(
             _entriesByDay[day.name] ?? const <ScheduleEntry>[],
           ),
+          mode: AgendaBoardMode.view,
         ),
       ),
     );

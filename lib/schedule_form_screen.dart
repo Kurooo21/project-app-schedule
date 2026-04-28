@@ -35,7 +35,7 @@ class _ScheduleFormScreenState extends State<ScheduleFormScreen> {
       text: widget.initialEntry?.subject ?? '',
     );
     _locationController = TextEditingController(
-      text: widget.initialEntry?.location ?? 'Ruang kelas',
+      text: widget.initialEntry?.location ?? '',
     );
     _noteController = TextEditingController(
       text: widget.initialEntry?.note ?? '',
@@ -205,7 +205,7 @@ class _ScheduleFormScreenState extends State<ScheduleFormScreen> {
                           controller: _subjectController,
                           onChanged: (_) => setState(() {}),
                           decoration: const InputDecoration(
-                            labelText: 'Mata pelajaran / kegiatan',
+                            labelText: 'Nama kegiatan',
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {

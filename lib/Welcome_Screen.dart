@@ -16,52 +16,77 @@ class WelcomeScreen extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 20,
+                    minHeight: constraints.maxHeight - 40,
                   ),
                   child: ScreenSurface(
-                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 26),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        const SizedBox(height: 20),
+                        // TITLE
                         Text(
-                          'Atur Jadwal\nLebih Mudah.',
-                          style: GoogleFonts.sora(
-                            fontSize: 36,
-                            height: 1.2,
-                            fontWeight: FontWeight.w800,
-                            color: AppPalette.primaryDark,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Susun pelajaran, tugas, dan kegiatan harian dalam satu tempat yang rapi dan nyaman.',
+                          'DAILY SCHEDULE',
                           style: GoogleFonts.manrope(
-                            fontSize: 15,
-                            height: 1.6,
-                            fontWeight: FontWeight.w500,
-                            color: AppPalette.subtleText,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2.0,
+                            color: AppPalette.primaryStrong,
                           ),
                         ),
-                        const SizedBox(height: 32),
-                        const _HeroBanner(),
-                        const SizedBox(height: 32),
-                        const _FeatureList(),
-                        const SizedBox(height: 48),
+                        
+                        const SizedBox(height: 60),
+                        
+                        // INTERACTIVE ILLUSTRATION
+                        const _ModernIllustration(),
+                        
+                        const SizedBox(height: 60),
+                        
+                        // WELCOME TEXT
+                        Column(
+                          children: [
+                            Text(
+                              'WELCOME',
+                              style: GoogleFonts.manrope(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                                color: AppPalette.primaryStrong,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              height: 4,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: AppPalette.accent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 60),
+                        
+                        // MULAI BUTTON
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(
                             style: FilledButton.styleFrom(
-                              backgroundColor: AppPalette.primaryDark,
+                              backgroundColor: AppPalette.primaryStrong,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 18,
-                                vertical: 18,
+                                vertical: 20,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(30),
                               ),
+                              elevation: 4,
+                              shadowColor: AppPalette.primaryStrong.withValues(alpha: 0.4),
                             ),
                             onPressed: () {
                               Navigator.push(
@@ -71,26 +96,18 @@ class WelcomeScreen extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Mulai Sekarang',
-                                  style: GoogleFonts.manrope(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                const Icon(
-                                  Icons.arrow_forward_rounded,
-                                  size: 20,
-                                ),
-                              ],
+                            child: Text(
+                              'MULAI',
+                              style: GoogleFonts.manrope(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -104,152 +121,128 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-class _HeroBanner extends StatelessWidget {
-  const _HeroBanner();
+class _ModernIllustration extends StatefulWidget {
+  const _ModernIllustration();
+
+  @override
+  State<_ModernIllustration> createState() => _ModernIllustrationState();
+}
+
+class _ModernIllustrationState extends State<_ModernIllustration> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: -6.0, end: 6.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF163854), Color(0xFF1F668C), Color(0xFF78C0DF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppPalette.primaryDark.withValues(alpha: 0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _animation.value),
+          child: child,
+        );
+      },
+      child: Stack(
+        alignment: Alignment.center,
         children: [
+          // Background soft circle
           Container(
-            padding: const EdgeInsets.all(14),
+            width: 170,
+            height: 170,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: const Icon(
-              Icons.calendar_month_rounded,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Hari ini',
-            style: GoogleFonts.manrope(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: Colors.white.withValues(alpha: 0.8),
+              shape: BoxShape.circle,
+              color: AppPalette.primarySoft.withValues(alpha: 0.5),
+              boxShadow: [
+                BoxShadow(
+                  color: AppPalette.primary.withValues(alpha: 0.1),
+                  blurRadius: 30,
+                  spreadRadius: 5,
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Fokus pada agenda pentingmu tanpa ribet.',
-            style: GoogleFonts.sora(
-              fontSize: 22,
-              height: 1.3,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+          // Inner circle
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppPalette.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: AppPalette.primaryDark.withValues(alpha: 0.08),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+          ),
+          // Calendar Icon
+          const Icon(
+            Icons.edit_calendar_rounded,
+            size: 55,
+            color: AppPalette.primaryStrong,
+          ),
+          // Floating decoration - Top Right
+          Positioned(
+            top: 15,
+            right: 25,
+            child: Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppPalette.accent,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppPalette.accent.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Floating decoration - Bottom Left
+          Positioned(
+            bottom: 25,
+            left: 20,
+            child: Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppPalette.success,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppPalette.success.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _FeatureList extends StatelessWidget {
-  const _FeatureList();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: const [
-        _FeatureItem(
-          icon: Icons.bolt_rounded,
-          title: 'Cepat & Ringan',
-          subtitle: 'Akses jadwalmu dalam sekejap',
-        ),
-        SizedBox(height: 16),
-        _FeatureItem(
-          icon: Icons.auto_awesome_rounded,
-          title: 'Desain Modern',
-          subtitle: 'Tampilan bersih dan nyaman di mata',
-        ),
-        SizedBox(height: 16),
-        _FeatureItem(
-          icon: Icons.edit_calendar_rounded,
-          title: 'Mudah Diatur',
-          subtitle: 'Tambah dan ubah jadwal dengan mudah',
-        ),
-      ],
-    );
-  }
-}
-
-class _FeatureItem extends StatelessWidget {
-  const _FeatureItem({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: AppPalette.primarySoft,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(
-            icon,
-            color: AppPalette.primaryDark,
-            size: 24,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.manrope(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: AppPalette.primaryDark,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: GoogleFonts.manrope(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppPalette.subtleText,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
