@@ -1,4 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ===== Izin untuk Notifikasi Terjadwal ===== -->
+    <!-- Android 13+ (API 33): wajib untuk menampilkan notifikasi -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Android 12+ (API 31): wajib untuk alarm/jadwal yang presisi -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- Agar notifikasi terjadwal tetap aktif setelah reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Izin getar -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
     <application
         android:label="daily_schedule"
         android:name="${applicationName}"
@@ -25,6 +36,20 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- ===== Receiver untuk flutter_local_notifications ===== -->
+        <!-- Menangani alarm yang sudah dijadwalkan -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+        <!-- Menjadwalkan ulang notifikasi setelah reboot perangkat -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -43,3 +68,4 @@
         </intent>
     </queries>
 </manifest>
+

@@ -3,8 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'Welcome_Screen.dart';
 import 'app_style.dart';
+import 'notification_helper.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationHelper.instance.init();
   runApp(const MyApp());
 }
 

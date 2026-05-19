@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_style.dart';
+import 'notification_helper.dart';
 import 'schedule_board_screen.dart';
 import 'schedule_models.dart';
 import 'schedule_widgets.dart';
@@ -16,6 +19,25 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final Map<String, List<ScheduleEntry>> _entriesByDay =
       buildInitialSchedules();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_syncInitialNotifications());
+  }
+
+  Future<void> _syncInitialNotifications() async {
+    for (final day in weekDays) {
+      final entries = _entriesByDay[day.name] ?? const <ScheduleEntry>[];
+
+      for (final entry in entries) {
+        await NotificationHelper.instance.scheduleEntryNotifications(
+          day: day,
+          entry: entry,
+        );
+      }
+    }
+  }
 
   Future<void> _openDayFlow(DayInfo day) async {
     final updatedEntries = await Navigator.push<List<ScheduleEntry>>(
@@ -83,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ListView.separated(
                             padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
                             itemCount: weekDays.length,
-                            separatorBuilder: (_, __) =>
+                            separatorBuilder: (_, _) =>
                                 const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final day = weekDays[index];

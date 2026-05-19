@@ -34,6 +34,8 @@ class ScheduleEntry {
   final String tag;
 }
 
+const Duration defaultReminderLeadTime = Duration(minutes: 5);
+
 enum AgendaBoardMode { view, edit, delete }
 
 class BoardLabel {
@@ -221,6 +223,71 @@ String formatTime(TimeOfDay time) {
 
 int timeInMinutes(TimeOfDay time) => time.hour * 60 + time.minute;
 
+int notificationIdForEntry(ScheduleEntry entry) =>
+    entry.id.hashCode.abs() % 100000;
+
+int startNotificationIdForEntry(ScheduleEntry entry) =>
+    notificationIdForEntry(entry) + 100000;
+
+int weekdayFromName(String name) {
+  const map = <String, int>{
+    'Senin': DateTime.monday,
+    'Selasa': DateTime.tuesday,
+    'Rabu': DateTime.wednesday,
+    'Kamis': DateTime.thursday,
+    'Jumat': DateTime.friday,
+    'Sabtu': DateTime.saturday,
+    'Minggu': DateTime.sunday,
+  };
+
+  return map[name] ?? DateTime.monday;
+}
+
+DateTime nextScheduleDateTimeForDay({
+  required String dayName,
+  required TimeOfDay time,
+  DateTime? from,
+}) {
+  final now = from ?? DateTime.now();
+  var daysUntilTarget = (weekdayFromName(dayName) - now.weekday) % 7;
+
+  if (daysUntilTarget == 0) {
+    final sameDayTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
+
+    if (!sameDayTime.isAfter(now)) {
+      daysUntilTarget = 7;
+    }
+  }
+
+  final targetDate = now.add(Duration(days: daysUntilTarget));
+  return DateTime(
+    targetDate.year,
+    targetDate.month,
+    targetDate.day,
+    time.hour,
+    time.minute,
+  );
+}
+
+DateTime reminderDateTimeForEntry({
+  required String dayName,
+  required TimeOfDay start,
+  Duration leadTime = defaultReminderLeadTime,
+  DateTime? from,
+}) {
+  return nextScheduleDateTimeForDay(
+    dayName: dayName,
+    time: start,
+    from: from,
+  ).subtract(leadTime);
+}
+
 Color tagColor(String tag) {
   switch (tag) {
     case 'Rutin':
@@ -236,6 +303,10 @@ Color tagColor(String tag) {
 
 String currentDateLabel() {
   final now = DateTime.now();
+  return formatCalendarDate(now);
+}
+
+String formatCalendarDate(DateTime date) {
   const months = <String>[
     'Januari',
     'Februari',
@@ -251,5 +322,24 @@ String currentDateLabel() {
     'Desember',
   ];
 
-  return '${now.day} ${months[now.month - 1]} ${now.year}';
+  return '${date.day} ${months[date.month - 1]} ${date.year}';
+}
+
+String weekdayName(int weekday) {
+  const weekNames = <String>[
+    'Senin',
+    'Selasa',
+    'Rabu',
+    'Kamis',
+    'Jumat',
+    'Sabtu',
+    'Minggu',
+  ];
+
+  return weekNames[weekday - 1];
+}
+
+String formatReminderDateTime(DateTime value) {
+  final time = TimeOfDay.fromDateTime(value);
+  return '${weekdayName(value.weekday)}, ${formatCalendarDate(value)} pukul ${formatTime(time)}';
 }

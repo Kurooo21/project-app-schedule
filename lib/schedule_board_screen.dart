@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_style.dart';
+import 'notification_helper.dart';
 import 'schedule_form_screen.dart';
 import 'schedule_models.dart';
 import 'schedule_widgets.dart';
@@ -92,6 +93,15 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
   }
 
   Future<void> _showEntrySheet(ScheduleEntry entry) async {
+    final reminderTime = reminderDateTimeForEntry(
+      dayName: widget.day.name,
+      start: entry.start,
+    );
+    final startTime = nextScheduleDateTimeForDay(
+      dayName: widget.day.name,
+      time: entry.start,
+    );
+
     await showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -134,6 +144,12 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
                 InfoLine(
                   icon: Icons.notes_rounded,
                   text: entry.note,
+                ),
+                const SizedBox(height: 8),
+                InfoLine(
+                  icon: Icons.notifications_active_rounded,
+                  text:
+                      'Notifikasi aktif 5 menit sebelumnya (${formatReminderDateTime(reminderTime)}) dan saat mulai (${formatReminderDateTime(startTime)}).',
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -234,6 +250,8 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
       return false;
     }
 
+    await NotificationHelper.instance.cancelEntryNotifications(entry);
+
     setState(() {
       _entries = _entries
           .where((item) => item.id != entry.id)
@@ -295,7 +313,7 @@ class _ScheduleBoardScreenState extends State<ScheduleBoardScreen> {
                           )
                         : ListView.separated(
                             itemCount: _entries.length,
-                            separatorBuilder: (_, __) =>
+                            separatorBuilder: (_, _) =>
                                 const SizedBox(height: 10),
                             itemBuilder: (context, index) {
                               final entry = _entries[index];

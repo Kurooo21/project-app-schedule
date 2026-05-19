@@ -180,7 +180,7 @@ class _DayActionScreenState extends State<DayActionScreen> {
                           )
                         : ListView.separated(
                             itemCount: previewEntries.length,
-                            separatorBuilder: (_, __) =>
+                            separatorBuilder: (_, _) =>
                                 const SizedBox(height: 10),
                             itemBuilder: (context, index) {
                               final entry = previewEntries[index];

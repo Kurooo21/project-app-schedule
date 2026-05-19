@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_style.dart';
+import 'notification_helper.dart';
 import 'schedule_models.dart';
 import 'schedule_widgets.dart';
 
@@ -83,7 +84,24 @@ class _ScheduleFormScreenState extends State<ScheduleFormScreen> {
     });
   }
 
-  void _save() {
+  String _reminderPreviewText() {
+    final reminderTime = reminderDateTimeForEntry(
+      dayName: widget.day.name,
+      start: _startTime,
+    );
+    final startTime = nextScheduleDateTimeForDay(
+      dayName: widget.day.name,
+      time: _startTime,
+    );
+
+    if (reminderTime.isBefore(DateTime.now())) {
+      return 'Pengingat 5 menit sebelumnya sudah lewat, tetapi notifikasi saat mulai tetap aktif: ${formatReminderDateTime(startTime)}.';
+    }
+
+    return 'Pengingat: ${formatReminderDateTime(reminderTime)}. Saat mulai: ${formatReminderDateTime(startTime)}.';
+  }
+
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -99,18 +117,112 @@ class _ScheduleFormScreenState extends State<ScheduleFormScreen> {
 
     final current = widget.initialEntry;
 
-    Navigator.pop(
-      context,
-      ScheduleEntry(
-        id: current?.id ?? DateTime.now().microsecondsSinceEpoch.toString(),
-        subject: _subjectController.text.trim(),
-        start: _startTime,
-        end: _endTime,
-        location: _locationController.text.trim(),
-        note: _noteController.text.trim().isEmpty
-            ? 'Tidak ada catatan tambahan.'
-            : _noteController.text.trim(),
-        tag: _selectedTag,
+    final entry = ScheduleEntry(
+      id: current?.id ?? DateTime.now().microsecondsSinceEpoch.toString(),
+      subject: _subjectController.text.trim(),
+      start: _startTime,
+      end: _endTime,
+      location: _locationController.text.trim(),
+      note: _noteController.text.trim().isEmpty
+          ? 'Tidak ada catatan tambahan.'
+          : _noteController.text.trim(),
+      tag: _selectedTag,
+    );
+
+    await NotificationHelper.instance.scheduleEntryNotifications(
+      day: widget.day,
+      entry: entry,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.pop(context, entry);
+  }
+
+  Widget _buildNotificationPanel() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: buildPanelDecoration(
+        color: AppPalette.surfaceSoft,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppPalette.primarySoft,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.notifications_active_rounded,
+              color: AppPalette.primaryDark,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Pengingat Notifikasi',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppPalette.primaryDark,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppPalette.primarySoft,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        'AKTIF',
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: AppPalette.primaryDark,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Aplikasi akan mengirim notifikasi 5 menit sebelum jadwal dan saat jam mulai.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    height: 1.5,
+                    color: AppPalette.subtleText,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  _reminderPreviewText(),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
+                    color: AppPalette.primaryDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -196,6 +308,8 @@ class _ScheduleFormScreenState extends State<ScheduleFormScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 14),
+                  _buildNotificationPanel(),
                   const SizedBox(height: 14),
                   Form(
                     key: _formKey,
